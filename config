@@ -1,0 +1,57 @@
+# ~/.config/i3status/config
+general {
+    colors = true
+    interval = 10
+    color_good = "#50fa7b"
+    color_degraded = "#ffb86c"
+    color_bad = "#ff5252"
+    markup = "pango"
+}
+
+order += "cpu_temperature 0"
+order += "load"
+order += "memory"
+order += "battery all"
+order += "tztime local"
+
+wireless *first* {
+    format_up = "<span foreground='#f2e5f7'>W: (%quality at %essid) %ip</span>"
+    format_down = "<span foreground='#f2e5f7'>W: down</span>"
+}
+
+ethernet *first* {
+    format_up = "<span foreground='#f2e5f7'>E: %ip (%speed)</span>"
+    format_down = "<span foreground='#f2e5f7'>E: down</span>"
+}
+
+battery all {
+    last_full_capacity = true
+    format = "<span foreground='#f2e5f7'>%status %percentage</span>"
+    format_down = "<span foreground='#f2e5f7'>No battery</span>"
+    status_chr = "󱐋"
+    status_bat = "󰁿"
+    status_full = "󰁹"
+}
+
+disk "/" {
+    format = "<span foreground='#f2e5f7'>%avail</span>"
+}
+
+cpu_temperature 0 {
+    format = "<span foreground='#f2e5f7'>%degrees°C</span>"
+    path = "/sys/class/thermal/thermal_zone0/temp"
+}
+
+load {
+    format = "<span foreground='#f2e5f7'>󰍛 %1min</span>"
+}
+
+memory {
+    format = "<span foreground='#f2e5f7'>󰘚 %used</span>"
+    threshold_degraded = "1G"
+    format_degraded = "<span foreground='#f2e5f7'>󰘚 MEMORY < %available</span>"
+}
+
+tztime local {
+    format = "<span foreground='#f2e5f7'>󰖉 %H:%M  󰃮 %d-%m-%Y</span>"
+}
