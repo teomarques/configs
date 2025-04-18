@@ -1,0 +1,170 @@
+# ~/.config/i3/config
+
+# --------------------------------------------------
+# CRUCIAL KEYBOARD CONFIGURATION (DO NOT MODIFY)
+# --------------------------------------------------
+exec_always --no-startup-id setxkbmap -layout "custom_br" -variant "basic" -option "lv3:ralt_switch"
+
+# --------------------------------------------------
+# GENERAL SETTINGS
+# --------------------------------------------------
+set $mod Mod4
+set $term ghostty
+
+# Visual settings – using your current gaps and updated font with Font Awesome
+gaps inner 8
+font pango:Montserrat,FontAwesome 12  # Include Font Awesome for icon support
+
+# Enforce window border width (with gaps, this is done via new_window)
+new_window pixel 2
+
+# --------------------------------------------------
+# PURPLE COLOR DEFINITIONS
+# --------------------------------------------------
+set $purple0  #2d0a39
+set $purple1  #3f0d55
+set $purple2  #5a1178
+set $purple3  #7f16a1
+set $purple4  #9b44b8
+set $purple5  #b86ed8
+set $purple6  #d8b4ea
+set $purple7  #f2e5f7
+set $purple8  #a239c5
+
+# Warning/urgent colors
+set $red     #ff5252
+set $yellow  #ffb86c
+set $green   #50fa7b
+
+# Client window styling using purple colors
+client.focused          $purple3 $purple3 $purple7 $purple4 $purple3
+client.focused_inactive $purple1 $purple1 $purple6 $purple2 $purple1
+client.unfocused        $purple0 $purple0 $purple5 $purple0 $purple0
+client.urgent           $red     $red     $purple7 $red     $red
+
+# --------------------------------------------------
+# DISPLAY & WORKSPACE CONFIGURATION
+# --------------------------------------------------
+exec_always --no-startup-id xrandr --output DP-1 --mode 1920x1080 --rate 144.00
+exec_always --no-startup-id xrandr --output HDMI-A-1 --mode 1920x1080
+exec --no-startup-id picom -b
+exec --no-startup-id $HOME/calendar_hover.sh
+
+# Assign workspaces to outputs
+workspace 1 output DP-1
+workspace 2 output HDMI-A-1
+workspace 3 output DP-1
+
+# Set wallpaper
+exec_always --no-startup-id xwallpaper --zoom $HOME/Pictures/jellyfish_Nero_AI_Image_Upscaler_Photo_Face.jpeg
+
+# --------------------------------------------------
+# STARTUP APPLICATIONS
+# --------------------------------------------------
+exec_always --no-startup-id nm-applet
+exec_always --no-startup-id blueman-applet
+exec_always --no-startup-id ~/.config/i3/battery-warning.sh
+exec pkill -f xdg-desktop-portal-wlr
+exec systemctl --user start xdg-desktop-portal-wlr
+exec systemctl --user start xdg-desktop-portal
+exec sleep 2
+
+# --------------------------------------------------
+# KEYBINDINGS
+# --------------------------------------------------
+bindsym $mod+Return exec --no-startup-id $term
+bindsym $mod+q kill
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen toggle
+bindsym F5 exec --no-startup-id xrandr --output eDP-1 --brightness $(awk "BEGIN {print (($(xrandr --verbose | grep -i brightness | cut -f2 -d ' ') - 0.1) <= 0 ? 0 : $(xrandr --verbose | grep -i brightness | cut -f2 -d ' ') - 0.1)}")
+bindsym F6 exec --no-startup-id xrandr --output eDP-1 --brightness $(awk "BEGIN {print (($(xrandr --verbose | grep -i brightness | cut -f2 -d ' ') + 0.1) >= 1 ? 1 : $(xrandr --verbose | grep -i brightness | cut -f2 -d ' ') + 0.1)}")
+
+
+# Launch dmenu
+bindsym $mod+Tab exec dmenu_run
+bindsym $mod+d exec dmenu_run
+
+# Reload i3 config
+bindsym $mod+Shift+c exec --no-startup-id i3-msg reload
+
+# Exit i3 with confirmation
+bindsym $mod+Shift+e exec i3-nagbar -t warning -m "Do you want to exit i3?" -B "Yes" "i3-msg exit"
+
+# Window focus movement
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# Move windows
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Workspace switching (1-10)
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+# Multimedia keys
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -10%
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+# bindsym F5 exec brightnessctl s 10%-
+# bindsym F6 exec brightnessctl s +10%
+bindsym Print exec ~/screenshot.sh
+
+# --------------------------------------------------
+# RESIZE MODE
+# --------------------------------------------------
+mode "resize" {
+    bindsym h resize shrink width 25px
+    bindsym j resize grow height 25px
+    bindsym k resize shrink height 25px
+    bindsym l resize grow width 25px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# --------------------------------------------------
+# i3BAR CONFIGURATION (Purple Styled)
+# --------------------------------------------------
+bar {
+    status_command i3status -c ~/.config/i3status/config
+    position top
+    font pango:Montserrat,FontAwesome 12
+    i3bar_command i3bar --transparency
+    colors {
+        background $purple088  # 88 for higher transparency (was CC before)
+        statusline $purple7
+        separator  $purple1
+
+        focused_workspace  $purple3 $purple3 $purple7
+        active_workspace   $purple4 $purple4 $purple7
+        inactive_workspace $purple088 $purple088 $purple5
+        urgent_workspace   $red     $red     $purple7
+    }
+}
